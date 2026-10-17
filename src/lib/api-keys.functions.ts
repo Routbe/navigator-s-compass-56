@@ -1,10 +1,11 @@
+import { requireDeveloperAccess } from "@/lib/auth/developer-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
 import { hashApiKey, newApiKey } from "./api-keys.server";
 
 export const listApiKeys = createServerFn({ method: "GET" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .handler(async ({ context }) => {
     const { data, error } = await context.db
       .from("api_keys")
@@ -18,7 +19,7 @@ export const listApiKeys = createServerFn({ method: "GET" })
   });
 
 export const createApiKey = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data) =>
     z
       .object({
@@ -63,7 +64,7 @@ export const createApiKey = createServerFn({ method: "POST" })
   });
 
 export const revokeApiKey = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { error } = await context.db

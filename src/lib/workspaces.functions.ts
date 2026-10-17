@@ -14,6 +14,17 @@ export const getWorkspaceContext = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { sql } = await import("@/lib/neon");
     const { resolveActiveWorkspace } = await import("./workspaces.server");
+    // Pending invites are accepted only for a verified email address, matched server-side.
+    const email = context.claims.email_verified ? String(context.claims.email ?? "").toLowerCase() : "";
+    if (email) {
+      await sql.transaction([
+        sql`insert into public.workspace_members (workspace_id, user_id, role)
+            select workspace_id, ${context.userId}, role from public.workspace_invites
+            where status = 'pending' and lower(email) = ${email}
+            on conflict do nothing`,
+        sql`update public.workspace_invites set status = 'accepted' where status = 'pending' and lower(email) = ${email}`,
+      ]);
+    }
     const rows = (await sql`
       select w.id, w.name, w.slug, w.avatar_url, w.plan, m.role::text as role
       from public.workspace_members m join public.workspaces w on w.id = m.workspace_id
