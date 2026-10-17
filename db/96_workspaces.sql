@@ -47,9 +47,9 @@ where p.is_business = true and p.username is not null
 on conflict (slug) do nothing;
 
 insert into public.workspace_members (workspace_id, user_id, role)
-select w.id, p.user_id, 'owner'
+select w.id, p.id, 'owner'
 from public.profiles p
 join public.workspaces w on w.slug = 'ws-' || lower(regexp_replace(p.username, '[^a-zA-Z0-9-]', '', 'g'))
-where p.is_business = true and p.user_id is not null
-  and exists (select 1 from public.users u where u.id = p.user_id)
+where p.is_business = true and p.id is not null
+  and exists (select 1 from public.users u where u.id = p.id)
 on conflict do nothing;

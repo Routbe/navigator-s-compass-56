@@ -39,3 +39,11 @@
 - [x] Open redirects dichten (safeRedirect: alleen relatief, rout.be, rout.dlp.li)
 - [x] Inlogcodes en berichtinhoud uit logs
 - [ ] Discord OAuth (identify + connections), versleutelde tokens, profielkaart, ontkoppelen (wacht op DISCORD_CLIENT_ID/SECRET)
+
+## Workspaces & Developer Console (overdracht 17/10)
+- [x] db/96_workspaces.sql toegepast op Neon
+- [ ] assertWorkspaceRole + active_workspace_id-cookie, console/OAuth-routes beveiligen
+- [ ] Workspace-switcher linksboven
+- [ ] Team-tabblad in instellingen (leden, rollen, uitnodigen)
+- [ ] Console-menu verbergen voor editors
+- [ ] Tests + AGENTS.md-regel
