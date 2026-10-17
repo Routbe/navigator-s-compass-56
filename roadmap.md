@@ -47,3 +47,5 @@
 - [x] Team-tabblad in instellingen (leden, rollen, uitnodigen)
 - [x] Console-menu verbergen voor editors
 - [x] Tests + AGENTS.md-regel
+- [ ] Component toevoegen: zoekknop (vergrootglas) in stap 1; alle sociale platformen met juist logo + alleen gebruikersnaam invullen (ook bij + Socials) — vergelijk met oude repo navigator-s-compass-01ab8363
+- [ ] Live status van koppelingen verschijnt niet bij Live Integraties in de hub
