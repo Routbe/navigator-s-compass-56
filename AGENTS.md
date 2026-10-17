@@ -37,3 +37,5 @@
 - Profile sections use profile-section-blocks.ts and blocks; explicit hidden/scheduled sections suppress fallbacks. Why: no duplicate or resurrected content.
 - No Supabase client or token middleware; sessions use the rout_session cookie. Why: it broke sign-in.
 - Client-supplied redirects/origins pass `safe-redirect.ts`; never log auth codes, tokens or message text. Why: no open redirects or leaks.
+
+- Workspace access is decided server-side only: `assertWorkspaceRole` / `resolveActiveWorkspace` in `src/lib/workspaces.server.ts` read the HttpOnly `active_workspace_id` cookie (invalid membership falls back to personal); console and API-key functions use `requireDeveloperAccess`; invites are accepted only for a verified matching email. Why: UI hiding alone never protects data.

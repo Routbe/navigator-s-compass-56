@@ -42,8 +42,8 @@
 
 ## Workspaces & Developer Console (overdracht 17/10)
 - [x] db/96_workspaces.sql toegepast op Neon
-- [ ] assertWorkspaceRole + active_workspace_id-cookie, console/OAuth-routes beveiligen
-- [ ] Workspace-switcher linksboven
-- [ ] Team-tabblad in instellingen (leden, rollen, uitnodigen)
-- [ ] Console-menu verbergen voor editors
-- [ ] Tests + AGENTS.md-regel
+- [x] assertWorkspaceRole + active_workspace_id-cookie, console/OAuth-routes beveiligen
+- [x] Workspace-switcher linksboven
+- [x] Team-tabblad in instellingen (leden, rollen, uitnodigen)
+- [x] Console-menu verbergen voor editors
+- [x] Tests + AGENTS.md-regel
