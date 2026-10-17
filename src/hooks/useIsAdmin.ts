@@ -20,7 +20,7 @@ async function resolveIsAdmin(userId: string): Promise<boolean> {
       cache = { userId, value: res.isAdmin };
       return res.isAdmin;
     } catch {
-      cache = { userId, value: false };
+      // Don't cache a failed check: a flaky call must not lock a real admin out for the session.
       return false;
     } finally {
       inflight = null;

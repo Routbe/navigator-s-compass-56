@@ -39,6 +39,10 @@ export async function adminEmailEligibility(email: unknown): Promise<AdminEmailE
       select 1 from public.user_roles r
       join public.users u on u.id = r.user_id
       where lower(u.email) = ${normalized} and r.role::text = 'admin'
+      union all
+      select 1 from public.admin_permissions p
+      join public.users u on u.id = p.user_id
+      where lower(u.email) = ${normalized}
       limit 1
     `) as unknown[];
     return rows.length > 0 ? { ok: true } : { ok: false, reason: "not_admin" };
