@@ -64,7 +64,7 @@ export const adminIssueGiftCard = createServerFn({ method: "POST" })
       recipientName: data.recipientName || null,
       message: data.message || null,
       physicalDelivery: false,
-    } as never);
+    });
     await markGiftCardPaid({ giftId: order.id, reference: `admin:${context.userId}` });
     await writeAudit({ adminId: context.userId, action: "gift_card_issue", targetLabel: order.code }).catch(() => undefined);
     return { code: order.code };
