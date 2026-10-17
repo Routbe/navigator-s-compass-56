@@ -2,8 +2,9 @@ import { useMemo, useState, type ComponentType } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowLeft, BadgeCheck, ChevronRight, Clapperboard, Briefcase, Link2, MessageCircle, Radio, Search, LayoutGrid } from "lucide-react";
+import { ArrowLeft, AtSign, BadgeCheck, ChevronRight, Clapperboard, Briefcase, Link2, MessageCircle, Radio, Search, LayoutGrid } from "lucide-react";
 import { BrandIcon } from "@/components/integrations/BrandIcon";
+import { lookupBrandIcon } from "@/utils/brandIcons";
 import { INTEGRATIONS, integrationById, type Integration } from "@/lib/integrations-catalog";
 import { getMyIntegrations, saveIntegration } from "@/lib/integrations.functions";
 import { getMyPresence, setSpotifyPresenceVisible } from "@/lib/presence.functions";
@@ -101,10 +102,11 @@ export const LIVE_COMPONENTS: { provider: string; note: string }[] = [
 const SUGGESTED_KINDS = ["link", "instagram", "text", "video", "media_gallery", "spotify", "newsletter", "widget:questions", "widget:badges", "widget:reach", "calendly", "booking_request"];
 const SUGGESTED_LIVE = ["spotify", "github", "youtube", "bluesky", "wsocial", "lichess", "chesscom", "wakatime"];
 
-type CategoryId = "standard" | "media" | "leads" | "live" | "business" | "all";
+type CategoryId = "standard" | "socials" | "media" | "leads" | "live" | "business" | "all";
 
 const CATEGORIES: { id: CategoryId; title: string; note: string; icon: ComponentType<{ className?: string }> }[] = [
-  { id: "standard", title: "Links & Socials", note: "Eigen links, socials, tekst en contactkaart", icon: Link2 },
+  { id: "socials", title: "Sociale media", note: "Instagram, TikTok, X, … — enkel je gebruikersnaam", icon: AtSign },
+  { id: "standard", title: "Links & Tekst", note: "Eigen links, tekst en contactkaart", icon: Link2 },
   { id: "media", title: "Media", note: "Video, foto's en audio", icon: Clapperboard },
   { id: "leads", title: "Interactief & Widgets", note: "Nieuwsbrief, polls, vragen en badges", icon: MessageCircle },
   { id: "live", title: "Status & Feeds", note: "Live wat je nu doet: muziek, games, code…", icon: Radio },
@@ -138,6 +140,19 @@ interface Props {
 }
 
 const ALL_ITEMS = COMPONENT_LIBRARY.flatMap((g) => g.items);
+
+/** Alle social platformen: je vult enkel je gebruikersnaam in, de link maken wij. */
+const SOCIAL_KINDS = BLOCK_KINDS.filter((k) => k.category === "socials" || k.category === "featured");
+
+function SocialLogo({ kind }: { kind: string }) {
+  const icon = lookupBrandIcon(kind);
+  if (!icon) return <Link2 className="h-6 w-6 text-muted-foreground" aria-hidden />;
+  return (
+    <svg viewBox={icon.viewBox ?? "0 0 24 24"} className="h-6 w-6 shrink-0" aria-hidden style={{ fill: icon.color }}>
+      <path d={icon.path} />
+    </svg>
+  );
+}
 
 /**
  * Component-bibliotheek in twee stappen: eerst een categorie kiezen,
