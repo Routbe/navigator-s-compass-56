@@ -29,7 +29,6 @@
 - Shells load lazily; preview mode overrides are UI-only. Why: previews never loosen server access.
 - Stamps: lock links before redeeming in one gateway transaction; enforce public profile visibility. Why: no cap overruns or private collections leaked.
 - Open-web ownership: server-side bio-check only (`checkBioVerify`); `verified_via` 'sso'|'bio', handle change drops bio; user fetch hosts pass `isPublicHost`. Why: no client trust, no SSRF.
-- Guestbook (`guestbook.server.ts`, db/90): only signed-in members post, owners pin/delete via `owner_id` checks, public reads return pinned notes of public profiles only. Why: verified network effect, no spam, privacy enforced server-side.
 
 - Admin control uses authenticated RPCs with assertAdminRole, keyset pages and explicit errors; transport logs store actual HTTP status/direction, never URLs or request bodies. Why: protect private data and avoid invented telemetry.
 - Live-status windows: `live-presence-rules.ts`, applied server-side. Why: no client trust.
