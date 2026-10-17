@@ -38,3 +38,4 @@
 - Client-supplied redirects/origins pass `safe-redirect.ts`; never log auth codes, tokens or message text. Why: no open redirects or leaks.
 
 - Workspace roles are checked server-side only (`workspaces.server.ts`, HttpOnly `active_workspace_id` cookie, `requireDeveloperAccess` on console/API-key fns; invites need a verified email). Why: UI hiding never protects data.
+- Subdirectories (e.g. src/lib) have their own AGENTS.md; read it before changing files there.
