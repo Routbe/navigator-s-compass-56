@@ -16,6 +16,15 @@ import {
   adminReviewInfluencerRequest,
 } from "@/lib/verification-requests.functions";
 import { VerifyUserDialog } from "@/components/admin/VerifyUserDialog";
+import { AppLayout } from "@/components/layout/AppLayout";
+
+const FOLDERS = [
+  { id: "pending", label: "Ingediend" },
+  { id: "awaiting_payment", label: "Bezig" },
+  { id: "approved", label: "Gelukt" },
+  { id: "rejected", label: "Mislukt" },
+] as const;
+type Folder = (typeof FOLDERS)[number]["id"];
 
 /**
  * Super Admin inbox: pending influencer- en bedrijfsaanvragen met een
@@ -66,10 +75,11 @@ export default function AdminVerificationRequests() {
     typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("request"),
   );
   const [busy, setBusy] = useState(false);
+  const [folder, setFolder] = useState<Folder>("pending");
 
   const refresh = useCallback(async () => {
     try {
-      const [b, i] = await Promise.all([listBusiness({ data: {} }), listInfluencer({ data: {} })]);
+      const [b, i] = await Promise.all([listBusiness({ data: { status: folder } }), listInfluencer({ data: { status: folder } })]);
       setItems([
         ...(i as Row[]).map((row) => ({ kind: "influencer" as const, row })),
         ...(b as Row[]).map((row) => ({ kind: "business" as const, row })),
@@ -77,23 +87,28 @@ export default function AdminVerificationRequests() {
     } catch {
       toast.error("Kon de inbox niet laden.");
     }
-  }, [listBusiness, listInfluencer]);
+  }, [listBusiness, listInfluencer, folder]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
   const selected = useMemo(() => items.find((it) => text(it.row, "id") === selectedId) ?? null, [items, selectedId]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8 px-6 py-10">
-      <header>
-        <h1 className="font-display text-3xl tracking-tight">Verificaties</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Inbox met openstaande aanvragen. Alle gegevens zijn al ingevuld.</p>
-      </header>
+    <AppLayout title="Verificaties & aanvragen" crumbs={[{ label: "Beheer", to: "/admin" }, { label: "Verificaties" }]} width="wide">
+    <div className="space-y-8">
+      <div role="tablist" aria-label="Mappen" className="flex flex-wrap gap-2">
+        {FOLDERS.map((f) => (
+          <Button key={f.id} role="tab" aria-selected={folder === f.id} size="sm" variant={folder === f.id ? "default" : "outline"}
+            onClick={() => { setFolder(f.id); setSelectedId(null); }}>
+            {f.label}
+          </Button>
+        ))}
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <aside className="space-y-2">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Inbox · {items.length}</p>
-          {items.length === 0 && <p className="text-sm text-muted-foreground">Geen openstaande aanvragen.</p>}
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">{FOLDERS.find((f) => f.id === folder)?.label} · {items.length}</p>
+          {items.length === 0 && <p className="text-sm text-muted-foreground">Niets in deze map.</p>}
           {items.map((it) => {
             const id = text(it.row, "id");
             const Icon = it.kind === "business" ? Building2 : Sparkles;
@@ -119,7 +134,19 @@ export default function AdminVerificationRequests() {
         </aside>
 
         <section className="rounded-2xl border border-border bg-card p-6">
-          {selected ? (
+          {selected && folder !== "pending" ? (
+            <div className="space-y-4">
+              <h2 className="text-lg font-medium">{selected.kind === "business" ? "Bedrijfsverificatie" : "Influencerverificatie"}</h2>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                {fieldsOf(selected).map(([label, value]) => (
+                  <div key={label}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="whitespace-pre-wrap text-sm">{value || "—"}</dd></div>
+                ))}
+                {text(selected.row, "admin_note") && (
+                  <div><dt className="text-xs text-muted-foreground">Notitie</dt><dd className="text-sm">{text(selected.row, "admin_note")}</dd></div>
+                )}
+              </dl>
+            </div>
+          ) : selected ? (
             <RequestDetail
               key={text(selected.row, "id")}
               item={selected}
@@ -149,6 +176,7 @@ export default function AdminVerificationRequests() {
 
       <PersonPanel />
     </div>
+    </AppLayout>
   );
 }
 
