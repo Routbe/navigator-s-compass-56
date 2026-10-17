@@ -21,6 +21,8 @@ import { Link, useNavigate } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
 import { clearAdminRoleCache } from "@/hooks/useIsAdmin";
 import { UserAvatar } from "@/components/UserAvatar";
+import { useWorkspaceContext } from "@/components/WorkspaceSwitcher";
+import { canUseDeveloperTools } from "@/lib/workspace-rules";
 import { getMyAccount } from "@/lib/account.functions";
 
 /**
@@ -28,6 +30,8 @@ import { getMyAccount } from "@/lib/account.functions";
  * surfaces never duplicate each other.
  */
 export function ProfileMenu() {
+  const { data: wsCtx } = useWorkspaceContext();
+  const devTools = canUseDeveloperTools(wsCtx?.activeRole ?? null);
   const { user, signOut, loading } = useAuth();
 
   const nav = useNavigate();
@@ -147,11 +151,13 @@ export function ProfileMenu() {
           <DropdownMenuItem onClick={() => nav("/settings")} className="gap-2">
             <Settings className="h-4 w-4 shrink-0" aria-hidden /> Account &amp; Security
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a href="/console" target="_blank" rel="noopener noreferrer" className="gap-2">
-              <PanelsTopLeft className="h-4 w-4 shrink-0" aria-hidden /> Developer Console
-            </a>
-          </DropdownMenuItem>
+          {devTools && (
+            <DropdownMenuItem asChild>
+              <a href="/console" target="_blank" rel="noopener noreferrer" className="gap-2">
+                <PanelsTopLeft className="h-4 w-4 shrink-0" aria-hidden /> Developer Console
+              </a>
+            </DropdownMenuItem>
+          )}
 
 
 
