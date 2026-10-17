@@ -24,6 +24,8 @@ import {
 import { RoutLogo } from "@/components/RoutLogo";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { ProfileMenu } from "@/components/ProfileMenu";
+import { WorkspaceSwitcher, useWorkspaceContext } from "@/components/WorkspaceSwitcher";
+import { canUseDeveloperTools } from "@/lib/workspace-rules";
 import { Footer } from "@/components/Footer";
 import { AppLogo } from "@/components/console/AppLogo";
 import { useConsoleApp } from "@/components/console/console-data";
@@ -116,6 +118,8 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
 
 function ConsoleWorkspace() {
   const [open, setOpen] = useState(false);
+  const { data: ws } = useWorkspaceContext();
+  const allowed = canUseDeveloperTools(ws?.activeRole ?? null);
   return (
     <div className="dark flex min-h-screen flex-col bg-background text-foreground">
       <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/90 backdrop-blur-md">
@@ -127,6 +131,7 @@ function ConsoleWorkspace() {
             <RoutLogo size={28} />
           </a>
           <span className="hidden border-l border-border pl-3 text-sm text-muted-foreground sm:inline">Developer Console</span>
+          <WorkspaceSwitcher />
           <div className="ml-auto flex items-center gap-2">
             <LanguageToggle className="hidden sm:inline-flex" />
             <ProfileMenu />
@@ -140,11 +145,22 @@ function ConsoleWorkspace() {
         </SheetContent>
       </Sheet>
       <div className="flex flex-1">
-        <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border p-4 md:block">
-          <SidebarBody />
-        </aside>
+        {allowed && (
+          <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-border p-4 md:block">
+            <SidebarBody />
+          </aside>
+        )}
         <div className="min-w-0 flex-1">
-          <Outlet />
+          {allowed ? (
+            <Outlet />
+          ) : (
+            <div className="mx-auto max-w-md px-6 py-24 text-center">
+              <h1 className="text-xl font-semibold">Geen toegang</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Als editor in deze workspace kun je de Developer Console en API &amp; Webhooks niet gebruiken. Wissel bovenaan naar Persoonlijk of vraag een admin om een andere rol.
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <Footer />
