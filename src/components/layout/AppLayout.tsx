@@ -9,6 +9,7 @@ import { BackToTop } from "@/components/BackToTop";
 import { NameOnboardingDialog } from "@/components/onboarding/NameOnboardingDialog";
 
 import { ProfileMenu } from "@/components/ProfileMenu";
+import { WorkspaceSwitcher } from "@/components/WorkspaceSwitcher";
 import { InviteButton } from "@/components/InviteButton";
 import { MobileMenu } from "@/components/MobileMenu";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -105,6 +106,9 @@ export function AppLayout({
           <Link to="/" className="shrink-0" aria-label="ROUT home">
             <RoutLogo size={28} />
           </Link>
+          <div className="hidden sm:block">
+            <WorkspaceSwitcher />
+          </div>
 
           <div className="ml-auto flex items-center gap-2">
             <Link to="/explore" className="hidden px-2 text-sm text-muted-foreground hover:text-foreground sm:inline">

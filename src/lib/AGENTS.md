@@ -19,3 +19,5 @@
 - Hub connections live in `user_integrations` (db/73) with a per-row Pro/Social/Both audience; `verified` is set only server-side when the handle matches a sign-in identity. Why: typed handles must never look proven.
 - Total reach is summed only from Connections Hub rows (`user_integrations`, db/74): open platforms auto-fetch, others use a per-integration manual count; never social_links or placeholders. Why: the number must reflect what the member actually connected.
 - YouTube vault (`youtube.server.ts`, db/95) reuses the Google client keys in a separate OAuth flow (youtube.readonly, offline) and seals tokens on the `user_integrations` 'youtube' row; failed refresh sets `connection_status='disconnected'`, disconnect revokes and deletes the row, visitors read only the cached card via `/api/public/youtube/card`. Why: Better Auth sign-in stays untouched and tokens never leave the server.
+
+- Guestbook (`guestbook.server.ts`, db/90): only signed-in members post, owners pin/delete via `owner_id` checks, public reads return pinned notes of public profiles only. Why: verified network effect, no spam, privacy enforced server-side.

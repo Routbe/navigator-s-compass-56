@@ -1,3 +1,4 @@
+import { requireDeveloperAccess } from "@/lib/auth/developer-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { cleanRedirectUri, normalizeRedirectUri } from "./redirect-match";
@@ -37,14 +38,14 @@ async function friendly<T>(fn: () => Promise<T>): Promise<T> {
 const idSchema = z.object({ id: z.string().uuid() }).strict();
 
 export const consoleAccess = createServerFn({ method: "GET" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .handler(async ({ context }) => {
     const { isVerifiedDeveloper } = await import("./provider.server");
     return { verified: await isVerifiedDeveloper(context.userId) };
   });
 
 export const listOAuthDebugEvents = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) =>
     z.object({ id: z.string().uuid(), errorsOnly: z.boolean().optional() }).strict().parse(data),
   )
@@ -58,7 +59,7 @@ export const listOAuthDebugEvents = createServerFn({ method: "POST" })
   });
 
 export const listMyApiActivity = createServerFn({ method: "GET" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .handler(async ({ context }) => {
     await assertVerified(context.userId);
     const { listClients } = await import("./provider.server");
@@ -70,7 +71,7 @@ export const listMyApiActivity = createServerFn({ method: "GET" })
   });
 
 export const listOAuthClients = createServerFn({ method: "GET" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .handler(async ({ context }) => {
     await assertVerified(context.userId);
     const { listClients } = await import("./provider.server");
@@ -78,7 +79,7 @@ export const listOAuthClients = createServerFn({ method: "GET" })
   });
 
 export const saveOAuthClient = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => clientSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -116,7 +117,7 @@ export const saveOAuthClient = createServerFn({ method: "POST" })
   });
 
 export const saveOAuthClientSettings = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => settingsSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -132,7 +133,7 @@ export const saveOAuthClientSettings = createServerFn({ method: "POST" })
   });
 
 export const deleteOAuthClient = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => idSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -142,7 +143,7 @@ export const deleteOAuthClient = createServerFn({ method: "POST" })
   });
 
 export const rotateOAuthSecret = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => idSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -162,7 +163,7 @@ export const rotateOAuthSecret = createServerFn({ method: "POST" })
   });
 
 export const getOAuthClientInsights = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => idSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -174,7 +175,7 @@ export const getOAuthClientInsights = createServerFn({ method: "POST" })
   });
 
 export const listOAuthTestUsers = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => idSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -183,7 +184,7 @@ export const listOAuthTestUsers = createServerFn({ method: "POST" })
   });
 
 export const addOAuthTestUser = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => testUserSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -193,7 +194,7 @@ export const addOAuthTestUser = createServerFn({ method: "POST" })
   });
 
 export const removeOAuthTestUser = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => testUserSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -203,7 +204,7 @@ export const removeOAuthTestUser = createServerFn({ method: "POST" })
   });
 
 export const requestOAuthVerification = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => verificationRequestSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
@@ -226,7 +227,7 @@ export const requestOAuthVerification = createServerFn({ method: "POST" })
 /* ------------------------------------------------------ admin review ---- */
 
 export const listAppVerificationRequests = createServerFn({ method: "GET" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .handler(async ({ context }) => {
     const { assertAdminRole } = await import("@/lib/admin.server");
     await assertAdminRole(context.userId);
@@ -235,7 +236,7 @@ export const listAppVerificationRequests = createServerFn({ method: "GET" })
   });
 
 export const reviewAppVerificationRequest = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) =>
     z.object({ requestId: z.string().uuid(), approve: z.boolean() }).strict().parse(data),
   )
@@ -381,7 +382,7 @@ async function checkRequest(data: AuthorizeInput) {
 import { redirectWith, errorRedirect } from "./authorize-redirect";
 
 export const describeAuthorizeRequest = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => authorizeSchema.parse(data))
   .handler(async ({ data, context }): Promise<AuthorizePrompt> => {
     const checked = await checkRequest(data);
@@ -427,7 +428,7 @@ export const describeAuthorizeRequest = createServerFn({ method: "POST" })
   });
 
 export const decideAuthorizeRequest = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) =>
     authorizeSchema.extend({ allow: z.boolean(), richIdentityOptIn: z.boolean().optional() }).parse(data),
   )
@@ -533,7 +534,7 @@ export const silentAuthorize = createServerFn({ method: "POST" })
 /* ------------------------------------------------------------ step-up ---- */
 
 export const sendStepUpCode = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) => z.object({ clientId: z.string().min(4).max(120) }).parse(data))
   .handler(async ({ data, context }) => {
     const { getClientByClientId, createStepUpCode } = await import("./provider.server");
@@ -556,7 +557,7 @@ export const sendStepUpCode = createServerFn({ method: "POST" })
   });
 
 export const verifyStepUp = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireDeveloperAccess])
   .inputValidator((data: unknown) =>
     z.object({ clientId: z.string().min(4).max(120), code: z.string().regex(/^\d{6}$/) }).parse(data),
   )
