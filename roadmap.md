@@ -21,11 +21,11 @@
 
 ## Feedback 17/10
 - [ ] Inlogmails naar @rout.be-adressen komen niet aan (publiek + admin)
-- [ ] Mede-admins kunnen niet inloggen op admin-portaal (rol niet doorgevoerd)
-- [ ] Admin: Verificaties & aanvragen en Cadeaubonnen openen zonder zijbalk
-- [ ] Admin: Verificaties & aanvragen indelen (ingediend / bezig / gelukt / mislukt)
+- [x] Mede-admins kunnen niet inloggen op admin-portaal (rol niet doorgevoerd)
+- [x] Admin: Verificaties & aanvragen en Cadeaubonnen openen zonder zijbalk
+- [x] Admin: Verificaties & aanvragen indelen (ingediend / bezig / gelukt / mislukt)
 - [ ] Admin: OAuth-apps verificatiescherm indelen (oud/nieuw, mappen)
-- [ ] Admin: Cadeaubonnen toevoegen/genereren-knop; "Publiek profiel" moet naar rout.be linken
+- [x] Admin: Cadeaubonnen toevoegen/genereren-knop; "Publiek profiel" moet naar rout.be linken
 - [ ] Eigen badges: transparante achtergrond bij upload behouden
 - [x] ROUT-presets kleiner (mobiel 4 per rij)
 - [x] Knoppen & Typografie: zelfde "aanpassen"-knop als Achtergrond & Visual FX

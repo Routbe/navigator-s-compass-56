@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth/middleware";
 
-/** True only when the signed-in user holds the `admin` role in user_roles. */
+/** Portal entry: full `admin` role, or at least one delegated admin permission. */
 export const amIAdmin = createServerFn({ method: "GET" })
   .middleware([requireAuth])
   .handler(async ({ context }) => {
@@ -10,7 +10,12 @@ export const amIAdmin = createServerFn({ method: "GET" })
     const rows = (await sql`
       select 1 from public.user_roles where user_id = ${context.userId} and role::text = 'admin' limit 1
     `) as unknown[];
-    return { isAdmin: rows.length > 0 };
+    if (rows.length > 0) return { isAdmin: true, fullAdmin: true };
+    // Co-admins with delegated permissions may enter the portal; each action still checks its own permission.
+    const perms = (await sql`
+      select 1 from public.admin_permissions where user_id = ${context.userId} limit 1
+    `.catch(() => [])) as unknown[];
+    return { isAdmin: perms.length > 0, fullAdmin: false };
   });
 
 /** Payments awaiting a manual SEPA/card match. */

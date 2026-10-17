@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink, Search } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { profileUrl } from "@/lib/app-domains";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -191,7 +192,7 @@ function MemberSheet({ userId, myId, onClose, onChanged }: { userId: string | nu
               </div>
               {self && <p className="mt-2 text-xs text-muted-foreground">Je kunt je eigen account niet modereren.</p>}
               {m.handle && (
-                <a href={`/${m.handle}`} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                <a href={profileUrl(m.handle)} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs text-primary hover:underline">
                   Publiek profiel <ExternalLink className="h-3 w-3" />
                 </a>
               )}
