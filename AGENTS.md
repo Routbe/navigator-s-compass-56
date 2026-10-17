@@ -19,7 +19,7 @@
 - Sign-ins return via `/auth/continue`; destinations/tour drafts use HttpOnly cookies; drafts only for new accounts, taken handles go to onboarding. Why: no token leaks or overwrites. Auth emails: `sendLocalizedEmail`, static template IDs, non-blocking.
 - ALTCHA uses self-hosted single-use proofs; db/54 owns replay DDL, unavailable storage fails closed, invalid proofs are refused before auth. Why: least privilege without weaker bot protection.
 - Community stats are live counts; reviews show only when `approved` (db/65); empty sections hide. Approving a verification cancels that user's other open same-tier requests (`verification-dedupe.ts`). Why: no fake social proof or duplicate work.
-- Vercel builds: nitro `vercel` preset; sandbox: cloudflare.
+- Builds: nitro `vercel` on Vercel, cloudflare in sandbox.
 - Third-party images on public pages load only via `/api/public/proxy-image` (host allowlist in `src/lib/image-proxy-rules.ts`). Why: visitors' IPs must never reach third-party image hosts.
 - Emailed action links (review, booking) only confirm on GET, change on POST; status mails send fire-and-forget. Why: scanners open links; mail failures never block actions.
 - 2FA/passkeys: Better Auth `twoFactor` + `@better-auth/passkey`, tables in `neon_auth` (db/77). Why: no custom crypto.
@@ -38,4 +38,4 @@
 - No Supabase client or token middleware; sessions use the rout_session cookie. Why: it broke sign-in.
 - Client-supplied redirects/origins pass `safe-redirect.ts`; never log auth codes, tokens or message text. Why: no open redirects or leaks.
 
-- Workspace access is decided server-side only: `assertWorkspaceRole` / `resolveActiveWorkspace` in `src/lib/workspaces.server.ts` read the HttpOnly `active_workspace_id` cookie (invalid membership falls back to personal); console and API-key functions use `requireDeveloperAccess`; invites are accepted only for a verified matching email. Why: UI hiding alone never protects data.
+- Workspace roles are checked server-side only (`workspaces.server.ts`, HttpOnly `active_workspace_id` cookie, `requireDeveloperAccess` on console/API-key fns; invites need a verified email). Why: UI hiding never protects data.
